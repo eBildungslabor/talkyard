@@ -37,28 +37,30 @@ new reply in topic: not notified
 No, better?:
 
 
+Trillian: Trusted Member
+Maria: full m
+
 Owen configs Trusted Members, whole site: New Topics.
 Owen posts new topic —> Trillian notfd.
 
 Owen configs All Members, whole site: New Topics.
 Owen posts new topic —> Trillian and Maria notfd.
+Reply —> no one
 
 Owen configs Trusted Members, whole site: Every Post.
-Owen posts a reply —> only Trillian notfd.
+Owen posts a reply —> Trillian notfd.
 
 Maria configs site: Every post
 Trillian configs site: Muted
-Owen posts a reply —> only Maria notfd.
+Owen posts a reply —> Maria notfd.
 Maria configs site: Muted
-(Owen posts a reply —> No one notfd)
+Owen posts a reply —> No one notfd
 
 
-
-
-Owen configs Trusted Members, Gen cat: New Topics.
+Owen configs Trusted Members, Spec Cat 2: New Topics.
 Owen posts new topic —> Trillian notfd.
 
-Owen configs All Members, Gen cat: New Topics.
+Owen configs All Members, Spec Cat 2: New Topics.
 Owen posts new topic —> Trillian and Maria notfd.
 
 Owen configs Trusted Members, Gen cat: Every Post.
