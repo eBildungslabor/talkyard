@@ -1123,7 +1123,9 @@ function pagesFor(browser) {
         let newName;
         api.topbar.openMyMenu();
         api.waitAndClick('.s_MM_StopImpB');
-        api.waitForVisible(api.userProfilePage.avatarAboutButtonsSelector);
+        // Wait for page to reload:
+        api.waitForGone('.s_MMB-IsImp');  // first, page reloads: the is-impersonating mark, disappears
+        api.waitForVisible('.esMyMenu');  // then the page reappears
         do {
           newName = api.topbar.getMyUsername();
         }
@@ -3108,6 +3110,11 @@ function pagesFor(browser) {
         api.waitUntilLoadingOverlayGone();
       },
 
+      openNotfPrefsFor: function(who: string, origin?: string) {
+        api.go((origin || '') + `/-/users/${who}/preferences/notifications`);
+        api.waitUntilLoadingOverlayGone();
+      },
+
       openDraftsEtcFor: function(who: string, origin?: string) {
         api.go((origin || '') + `/-/users/${who}/drafts-etc`);
         api.waitUntilLoadingOverlayGone();
@@ -3332,7 +3339,7 @@ function pagesFor(browser) {
         }
       },
 
-      preferences: {
+      preferences: {  // RENAME to prefs
         switchToEmailsLogins: function() {
           api.waitAndClick('.s_UP_Prf_Nav_EmLgL');
           api.waitForVisible('.s_UP_EmLg_EmL');
@@ -3373,6 +3380,7 @@ function pagesFor(browser) {
           setCheckbox('#sendSummaryEmails', enabled);
         },
 
+        // ---  Shuld use notifications.setSiteNotfLevel instead
         setNotfsForEachNewPost: function() {
           api.waitAndClick('.dw-notf-level');
           api.waitAndClick('.e_NtfAll');
@@ -3390,6 +3398,7 @@ function pagesFor(browser) {
           api.waitAndClick('.e_NtfNml');
           api.waitForGone('.e_NtfNml');
         },
+        // ---  / Shuld use notifications.setSiteNotfLevel instead
 
         clickChangePassword: function() {
           api.waitAndClick('.s_UP_Prefs_ChangePwB');
@@ -3405,6 +3414,13 @@ function pagesFor(browser) {
           api.waitAndClick('#e2eUP_Prefs_SaveB');
         },
         // ---- /END should be wrapped in `about { .. }`.
+
+        notfs: {
+          setSiteNotfLevel: (notfLevel: PageNotfLevel) => {
+            api.waitAndClick('.dw-notf-level');
+            api.notfLevelDropdown.clickNotfLevel(notfLevel);
+          }
+        },
 
         privacy: {
           setHideActivityForStrangers: function(enabled: boolean) {
@@ -3566,6 +3582,14 @@ function pagesFor(browser) {
       goToUser: function(member: Member | UserId, origin?: string) {
         const userId = _.isNumber(member) ? member : member.id;
         api.go((origin || '') + `/-/admin/users/id/${userId}`);
+      },
+
+      goToGroupsBuiltIn: function(origin?: string) {
+        api.go((origin || '') + '/-/admin/groups');
+      },
+
+      switchToGroupsBuiltIn: function(origin?: string) {
+        api.waitAndClick('.e_GrpsB');
       },
 
       goToUsersInvited: (origin?: string, opts: { loginAs? } = {}) => {
@@ -3890,6 +3914,10 @@ function pagesFor(browser) {
           api.waitAndClick('.e_ToggleModB');
           api.waitForVisible('.e_Mod-No');
         },
+
+        startImpersonating: function() {
+          api.waitAndClick('#e2eA_Us_U_ImpersonateB');
+        },
       },
 
       users: {
@@ -4018,6 +4046,13 @@ function pagesFor(browser) {
             api.waitAndClick('.s_AA_Us_Inv_SendB');
           },
         }
+      },
+
+      groups: {
+        openTrustedMembersGroup: () => {
+          api.waitAndClick('.e_TrstdMbsL');
+          api.waitAndAssertVisibleTextMatches('.esUP_Un', "trusted_members");
+        },
       },
 
       apiTab: {

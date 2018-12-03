@@ -1,5 +1,3 @@
-
-
 /// <reference path="../test-types.ts"/>
 
 import * as _ from 'lodash';
@@ -62,7 +60,7 @@ describe("notfs-prefs-inherit-own  TyT4RKK7Q2J", () => {
   });
 
   it("import a site", () => {
-    const site: SiteData = make.forumOwnedByOwen('eml-ntf-disc', { title: forumTitle });
+    const site: SiteData = make.forumOwnedByOwen('notf-inh-own', { title: forumTitle });
     site.members.push(modya);
     site.members.push(maria);
     idAddress = server.importSiteData(site);
@@ -75,7 +73,7 @@ describe("notfs-prefs-inherit-own  TyT4RKK7Q2J", () => {
     owensBrowser.complex.loginWithPasswordViaTopbar(owen);
   });
 
-  it("Creates a Specific category, in addition to General", () => {
+  it("Creates a Specific category", () => {
     owensBrowser.complex.createCategory({ name: SpecificCatName });
     owensBrowser.forumCategoryList.openCategory(SpecificCatName);
   });
@@ -161,7 +159,6 @@ describe("notfs-prefs-inherit-own  TyT4RKK7Q2J", () => {
   it("Maria goes to the page", () => {
     mariasBrowser.refresh();  // BUG no live notf for new topics?
     mariasBrowser.topbar.openLatestNotf();
-    settings.debugEachStep=true;
   });
 
   it("... configs replies for every post", () => {

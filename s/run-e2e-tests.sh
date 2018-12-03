@@ -243,6 +243,7 @@ function runAllE2eTests {
   runE2eTest s/wdio target/e2e/wdio.2chrome.conf.js    --only notfs-mark-all-as-read.2browsers $args
   runE2eTest s/wdio target/e2e/wdio.2chrome.conf.js    --only notf-override-group-prefs.2browsers $args
   runE2eTest s/wdio target/e2e/wdio.2chrome.conf.js    --only notfs-prefs-inherit-own.2browsers $args
+  runE2eTest s/wdio target/e2e/wdio.2chrome.conf.js    --only notfs-prefs-inherit-group.2browsers $args
 
   # See: specs/notf-page-cats-site.2browsers.test.ts:
   #runE2eTest s/wdio target/e2e/wdio.2chrome.conf.js   --only notfs-for-whole-site.2browsers $args
