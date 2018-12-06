@@ -164,11 +164,6 @@ how to use docker-compose already.
 
 #### The instructions
 
-1. Clone this repository, `cd` into it. Then update submodules:
-
-       git clone https://github.com/debiki/talkyard.git talkyard
-       cd talkyard
-       git submodule update --init
 
 1. Append some settings to the system config so that ElasticSearch will work:
    (run this as one single command, not one line at a time)
@@ -190,28 +185,25 @@ how to use docker-compose already.
        sudo sysctl --system
 
 
-1. Install Node.js modules: (using Yarn, which, when given no args, installs everything in `package.json`)
+1. Clone the repository, and type `make up`:  (you need GNU Make installed)
 
-       sudo s/d run --rm gulp yarn
+       git clone https://github.com/debiki/talkyard.git talkyard
+       cd talkyard
+       make up  # GNU Make
 
-       sudo s/d-gulp release
-       sudo s/d-gulp minifyTranslations
 
+1. Wait. `make up` takes a while: Git submodules and Node.js packages will be downloaded,
+   Typescript, Stylus and Scala code gets compiled and packaged, Docker images gets built.
 
-1. Build and start all Docker containers: (this will take a while: some Docker images will be downloaded and built)
+   You can tail the log messages, by typing `make tail`,
+   or `sudo s/d logs -f`.  (s/d means "scripts" and "docker-compose")
 
-       sudo s/d up -d   # s/d = shortcut for docker-compose, so long to type.
-                        # The 's' means "scripts" and 'd' means "docker-compose".
-
-       # And tail the logs:
-       sudo s/d logs -f
-
-   This log message might take 10 - 20 minutes: (lots of stuff is being downloaded — we'll try to
-   include all that in the Docker image directly instead, later)
+   The following log message might take 10 - 20 minutes: (lots of stuff is being downloaded
+   — we'll try to include all that in the Docker image directly instead, later)
 
        Loading project definition from /opt/talkyard/app/project
 
-   Wait until this appears in the logs:
+   Wait for these "Server started" log messages to appear:
 
        app_1     |
        app_1     | --- (Running the application, auto-reloading is enabled) ---
@@ -223,29 +215,31 @@ how to use docker-compose already.
        app_1     |
 
 
-1. Compile all Scala files, start the server, as follows:
-
-   Point your browser to http://localhost/. This sends a request to the Docker container
+1. Point your browser to http://localhost/. This sends a request to the Docker container
    named 'web', in which Nginx listens on port 80. Nginx sends the request to Play Framework
-   in the 'app' container, port 9000. Play Framework then starts compiling Scala files; this
-   takes a while — so the browser will show a 502 Bad Gateway error message (because Play
-   didn't reply because it's busy compiling stuff).
+   in the 'app' container, port 9000. Play Framework then starts compiling more Scala files; this
+   might take a while — the browser might show a 502 Bad Gateway error message (because Play
+   didn't reply because it was busy compiling code).
 
    Eventually, when done compiling, Play Framework will start. Then this message will get logged:
 
-       app_1  | [info] application - Starting... [EsM200HELLO]
+       app_1  | [info] application - Starting... [TyMHELLO]
+       ...
+       ...
+       app_1  | [info] application - Started. [TyMSTARTED]
 
-   But it's easy to miss, because after that, the server logs even more messages. You can
+   If you don't see these messages (maybe they scroll past too fast), you can
    continue with the next step just below anyway — just keep reloading the browser page until
-   any "is starting" message disappears.
+   any "is starting" message in the browser window disappears.
 
 
 1. Create a forum
 
-   Reload the browser at http://localhost/. Now eventually a page should be shown.
+   Reload the browser at http://localhost/. A page with a button should appear.
    Sign up as admin with this email: `admin@example.com` (must be that email).
    As username and password you can type `admin` and `public1234`.
 
+<!-- Not needed any longer.
    You'll be asked to confirm your email address, by clicking a link in an email
    that was sent to you — but in fact the email couldn't be sent, because you haven't configured
    any email server, and `admin@example.com` isn't your address anyway.
@@ -254,17 +248,32 @@ how to use docker-compose already.
    the terminal with log messages.) There you'll find
    the email — it's written to the log files, in development mode. Copy the
    confirmation link from the `<a href=...>` and paste it in the browser's address bar.
+   -->
 
-You can shutdown everything like so: `sudo s/d-killdown`, and if Play Framework runs out of memory
+You can shutdown everything like so: `make dead`, and if Play Framework runs out of memory
 (it'll do, if it recompiles Scala files and reloads the app many many times),
-you can restart it like so: `sudo s/d-restart-web-app`.
+you can restart it like so: `make restart`.
 
+
+Editing source code
+-----------------------------
+
+If you edit some code and reload the page in the browser, your changes will
+appear automatically: there's a Docker container, named Gulp, with Node.js
+installed, which recompile Typescript and Stylus CSS. And a container,
+named App, with Play Framework, which looks for changes to Scala files,
+and recompiles and reloads the app server as needed.
+
+If you edit Typescript, wait two seconds before you reload the page in
+the browser, otherwise the Typescript code might not yet have been transpiled.
+It might take 5 or 10 seconds for the page to reload, once you've changed
+something.
 
 
 Troubleshooting
 -----------------------------
 
-See [tips.mnd](./docs/tips.md).
+See [tips.md](./docs/tips.md).
 
 
 
@@ -440,7 +449,7 @@ And copy-paste it to where the related code is.
 ### Message codes and magic underscores
 
 Log messages, and plain text messages sent back to the browser, start with `TyM` if it's
-an info message, and `TyE` if it's an error. Like, `"Server starting... [TyMHELLO]"` (a log message).
+an info message, and `TyE` if it's an error. Like, `"Started. [TyMSTARTED]"` (a log message).
 
 These messsage codes helps you instantly find the relevat source code, if there's
 an error message anywhere. Otherwise, it can be terribly annoying,
