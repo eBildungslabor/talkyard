@@ -434,8 +434,8 @@ object EffectiveSettings {
   def isEmailAddressAllowed(address: String, domainWhiteListText: String, domainBlackListText: String)
         : Boolean = {
     def canBeDomain(line: String) = line.nonEmpty && line.headOption.isNot('#')
-    val whiteDomains = domainWhiteListText.lines.map(_.trim).filter(canBeDomain)
-    val blackDomains = domainBlackListText.lines.map(_.trim).filter(canBeDomain)
+    val whiteDomainsIterator = domainWhiteListText.lines.map(_.trim).filter(canBeDomain)
+    val blackDomainsIterator = domainBlackListText.lines.map(_.trim).filter(canBeDomain)
     def addrEndsWith(domain: String) =
       if (domain.contains("@") && domain.head != '@') {
         // Is an email address, not a domain. Fine — let people specify full addresses. And
@@ -451,15 +451,17 @@ object EffectiveSettings {
         // but don't let  someone.goodbad.com match bad.com.
         address.endsWith(s".$domain") || address.endsWith(s"@$domain")
       }
-    for (blackDomain <- blackDomains) {
+    for (blackDomain <- blackDomainsIterator) {
       if (addrEndsWith(blackDomain))
         return false
     }
-    for (whiteDomain <- whiteDomains) {
+    if (whiteDomainsIterator.isEmpty)
+      return true
+    for (whiteDomain <- whiteDomainsIterator) {
       if (addrEndsWith(whiteDomain))
         return true
     }
-    whiteDomains.isEmpty
+    false
   }
 }
 
